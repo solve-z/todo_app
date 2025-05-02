@@ -565,14 +565,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.8.0"
-  keyboard_utils_fork:
-    dependency: "direct main"
-    description:
-      name: keyboard_utils_fork
-      sha256: "8cd85549a8dd5dcf4aed09057430fbbea875c8cc0b9c0ddc8f85964da49fd7da"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   leak_tracker:
     dependency: transitive
     description:
