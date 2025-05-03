@@ -1,9 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/data/preference/memory/todo_data_holder.dart';
 import 'package:fast_app_base/common/data/preference/memory/todo_data_notifier.dart';
 import 'package:fast_app_base/common/theme/custom_theme_app.dart';
 import 'package:fast_app_base/screen/main/s_main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common/theme/custom_theme.dart';
 
@@ -43,8 +43,7 @@ class AppState extends State<App> with Nav, WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return CustomThemeApp(
       child: Builder(builder: (context) {
-        return TodoDataHolder(
-          notifier: notifier,
+        return ProviderScope(
           child: MaterialApp(
             navigatorKey: App.navigatorKey,
             localizationsDelegates: context.localizationDelegates,

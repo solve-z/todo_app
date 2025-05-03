@@ -1,29 +1,21 @@
-import 'package:fast_app_base/common/data/preference/memory/todo_data_notifier.dart';
 import 'package:fast_app_base/common/data/preference/memory/todo_status.dart';
 import 'package:fast_app_base/common/data/preference/memory/vo_todo.dart';
 import 'package:fast_app_base/screen/dialog/d_confirm.dart';
 import 'package:fast_app_base/screen/main/write/d_write_todo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TodoDataHolder extends InheritedWidget {
-  final TodoDataNotifier notifier;
+final userProvider = FutureProvider<String>((ref) => 'abc');
 
-  const TodoDataHolder({
-    super.key,
-    required super.child,
-    required this.notifier,
-  });
+final todoDataProvider =
+    StateNotifierProvider<TodoDataHolder, List<Todo>>((ref) {
+  final userID = ref.watch(userProvider);
+  debugPrint(userID.value!); // 새로운 유저 ID에서 TodoData를 가져왔다고 가정
+  return TodoDataHolder();
+});
 
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return true;
-  }
-
-  static TodoDataHolder _of(BuildContext context) {
-    TodoDataHolder inherited =
-        (context.dependOnInheritedWidgetOfExactType<TodoDataHolder>())!;
-    return inherited;
-  }
+class TodoDataHolder extends StateNotifier<List<Todo>> {
+  TodoDataHolder() : super([]);
 
   void changeTodoStatus(Todo todo) async {
     switch (todo.status) {
@@ -37,17 +29,18 @@ class TodoDataHolder extends InheritedWidget {
           todo.status = TodoStatus.incomplete;
         });
     }
-    notifier.notify();
+    state = List.of(state);
   }
 
   void addTodo() async {
     final result = await WriteTodoDialog().show();
     if (result != null) {
-      notifier.addTodo(Todo(
+      state.add(Todo(
         id: DateTime.now().millisecondsSinceEpoch,
         title: result.text,
         dueDate: result.dateTime,
       ));
+      state = List.of(state);
     }
   }
 
@@ -56,18 +49,18 @@ class TodoDataHolder extends InheritedWidget {
     if (result != null) {
       todo.title = result.text;
       todo.dueDate = result.dateTime;
-      notifier.notify();
+      state = List.of(state);
     }
   }
 
   void removeTodo(Todo todo) {
-    notifier.value.remove(todo);
-    notifier.notify();
+    state.remove(todo);
+    state = List.of(state);
   }
 
   static of(BuildContext buildContext) {}
 }
 
-extension TodoDataHolderContextExtension on BuildContext {
-  TodoDataHolder get holder => TodoDataHolder._of(this);
+extension TodoListHolderProvider on WidgetRef {
+  TodoDataHolder get readTodoHolder => read(todoDataProvider.notifier);
 }
